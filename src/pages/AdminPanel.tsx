@@ -1,65 +1,110 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Edit, Trash2, Package, Users, ShoppingCart, BarChart3 } from 'lucide-react';
+import { productService, Product } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
     category: '',
     description: '',
-    image: '',
-    inStock: true
+    image_url: '',
+    in_stock: true
   });
 
-  // Mock data - in real app, this would come from Supabase
-  const [products, setProducts] = useState([
-    {
-      id: '1',
-      name: 'Diamond Tennis Necklace',
-      price: 12500,
-      category: 'Necklaces',
-      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
-      inStock: true
-    },
-    {
-      id: '2',
-      name: 'Pearl Statement Necklace',
-      price: 3200,
-      category: 'Necklaces',
-      image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=400&h=400&fit=crop',
-      inStock: true
-    }
-  ]);
+  // Load products from Supabase
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
-  const handleAddProduct = () => {
-    if (newProduct.name && newProduct.price && newProduct.category) {
-      const product = {
-        id: Date.now().toString(),
-        ...newProduct,
-        price: Number(newProduct.price)
-      };
-      setProducts([...products, product]);
-      setNewProduct({
-        name: '',
-        price: '',
-        category: '',
-        description: '',
-        image: '',
-        inStock: true
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await productService.getAllProducts();
+      setProducts(data || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
       });
-      setShowAddProduct(false);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteProduct = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
+  const handleAddProduct = async () => {
+    if (newProduct.name && newProduct.price && newProduct.category) {
+      try {
+        setLoading(true);
+        const productData = {
+          ...newProduct,
+          price: Number(newProduct.price)
+        };
+        
+        await productService.addProduct(productData);
+        
+        toast({
+          title: "Success",
+          description: "Product added successfully",
+        });
+        
+        // Reset form and reload products
+        setNewProduct({
+          name: '',
+          price: '',
+          category: '',
+          description: '',
+          image_url: '',
+          in_stock: true
+        });
+        setShowAddProduct(false);
+        await loadProducts();
+        
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to add product",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      setLoading(true);
+      await productService.deleteProduct(id);
+      
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+      
+      await loadProducts();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const stats = [
@@ -150,7 +195,7 @@ const AdminPanel = () => {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-                  <Button onClick={() => setShowAddProduct(true)}>
+                  <Button onClick={() => setShowAddProduct(true)} disabled={loading}>
                     <Plus className="w-4 h-4 mr-2" />
                     Add Product
                   </Button>
@@ -192,18 +237,20 @@ const AdminPanel = () => {
                             className="w-full border border-gray-300 rounded px-3 py-2"
                           >
                             <option value="">Select Category</option>
-                            <option value="Necklaces">Necklaces</option>
-                            <option value="Rings">Rings</option>
-                            <option value="Earrings">Earrings</option>
-                            <option value="Bracelets">Bracelets</option>
+                            <option value="necklaces">Necklaces</option>
+                            <option value="pendants">Pendants</option>
+                            <option value="bracelets">Bracelets</option>
+                            <option value="rings">Rings</option>
+                            <option value="earrings">Earrings</option>
+                            <option value="anklets">Anklets</option>
                           </select>
                         </div>
                         <div>
                           <Label htmlFor="image">Image URL</Label>
                           <Input
                             id="image"
-                            value={newProduct.image}
-                            onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+                            value={newProduct.image_url}
+                            onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
                             placeholder="https://..."
                           />
                         </div>
@@ -219,7 +266,9 @@ const AdminPanel = () => {
                         />
                       </div>
                       <div className="flex gap-4">
-                        <Button onClick={handleAddProduct}>Add Product</Button>
+                        <Button onClick={handleAddProduct} disabled={loading}>
+                          {loading ? 'Adding...' : 'Add Product'}
+                        </Button>
                         <Button variant="outline" onClick={() => setShowAddProduct(false)}>
                           Cancel
                         </Button>
@@ -229,36 +278,41 @@ const AdminPanel = () => {
                 )}
 
                 {/* Products List */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <Card key={product.id}>
-                      <CardContent className="p-4">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-48 object-cover rounded mb-4"
-                        />
-                        <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                        <p className="text-gray-600 mb-2">{product.category}</p>
-                        <p className="text-xl font-bold text-gray-900 mb-4">
-                          AED {product.price.toLocaleString()}
-                        </p>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDeleteProduct(product.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                {loading ? (
+                  <div className="text-center py-8">Loading products...</div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <Card key={product.id}>
+                        <CardContent className="p-4">
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-48 object-cover rounded mb-4"
+                          />
+                          <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                          <p className="text-gray-600 mb-2">{product.category}</p>
+                          <p className="text-xl font-bold text-gray-900 mb-4">
+                            AED {product.price?.toLocaleString()}
+                          </p>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDeleteProduct(product.id!)}
+                              disabled={loading}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

@@ -1,9 +1,28 @@
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import CategoryGrid from '../components/CategoryGrid';
+import ProductCard from '../components/ProductCard';
 import { Button } from '@/components/ui/button';
+import { productService, Product } from '@/lib/supabase';
 
 const Index = () => {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    loadFeaturedProducts();
+  }, []);
+
+  const loadFeaturedProducts = async () => {
+    try {
+      const data = await productService.getAllProducts();
+      // Show first 4 products as featured
+      setFeaturedProducts((data || []).slice(0, 4));
+    } catch (error) {
+      console.error('Failed to load featured products:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -33,6 +52,45 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Featured Products Section */}
+      {featuredProducts.length > 0 && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-light tracking-wider text-gray-900 mb-6">
+                FEATURED PRODUCTS
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Discover our latest and most popular jewelry pieces
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+              {featuredProducts.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  id={product.id!}
+                  name={product.name}
+                  price={product.price || 0}
+                  image={product.image_url}
+                  category={product.category}
+                />
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Button 
+                variant="outline"
+                className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3"
+                onClick={() => window.location.href = '/jewellery'}
+              >
+                VIEW ALL PRODUCTS
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Collections Preview */}
       <section className="py-20 bg-white">

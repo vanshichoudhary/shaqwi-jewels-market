@@ -1,62 +1,80 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import ProductCard from '../components/ProductCard';
 import { Button } from '@/components/ui/button';
+import { productService, Product } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const CategoryPage = () => {
   const { category } = useParams();
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState('all');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  // Mock products data with real jewelry images
-  const products = [
-    {
-      id: '1',
-      name: 'Diamond Tennis Necklace',
-      price: 12500,
-      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
-      category: 'Necklaces'
-    },
-    {
-      id: '2',
-      name: 'Pearl Statement Necklace',
-      price: 3200,
-      image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=400&h=400&fit=crop',
-      category: 'Necklaces'
-    },
-    {
-      id: '3',
-      name: 'Gold Chain Necklace',
-      price: 1800,
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
-      category: 'Necklaces'
-    },
-    {
-      id: '4',
-      name: 'Emerald Pendant Necklace',
-      price: 8900,
-      image: 'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=400&h=400&fit=crop',
-      category: 'Necklaces'
-    },
-    {
-      id: '5',
-      name: 'Silver Layered Necklace',
-      price: 950,
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
-      category: 'Necklaces'
-    },
-    {
-      id: '6',
-      name: 'Rose Gold Choker',
-      price: 2100,
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
-      category: 'Necklaces'
+  useEffect(() => {
+    loadProducts();
+  }, [category]);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      let data;
+      
+      if (category && category !== 'jewellery') {
+        // Load products for specific category
+        data = await productService.getProductsByCategory(category);
+      } else {
+        // Load all products for general jewellery page
+        data = await productService.getAllProducts();
+      }
+      
+      setProducts(data || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const categoryName = category?.replace('-', ' ').toUpperCase() || 'JEWELLERY';
+
+  // Filter and sort products
+  const filteredProducts = products.filter(product => {
+    if (priceRange === 'all') return true;
+    const price = product.price || 0;
+    
+    switch (priceRange) {
+      case '0-1000':
+        return price < 1000;
+      case '1000-5000':
+        return price >= 1000 && price <= 5000;
+      case '5000-10000':
+        return price >= 5000 && price <= 10000;
+      case '10000+':
+        return price > 10000;
+      default:
+        return true;
+    }
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return (a.price || 0) - (b.price || 0);
+      case 'price-high':
+        return (b.price || 0) - (a.price || 0);
+      case 'newest':
+        return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-white">
@@ -109,26 +127,46 @@ const CategoryPage = () => {
           </div>
 
           <div className="text-gray-600">
-            {products.length} products
+            {filteredProducts.length} products
           </div>
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="mt-4 text-gray-600">Loading products...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No products found in this category.</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+              {filteredProducts.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  id={product.id!}
+                  name={product.name}
+                  price={product.price || 0}
+                  image={product.image_url}
+                  category={product.category}
+                />
+              ))}
+            </div>
 
-        {/* Load More */}
-        <div className="text-center">
-          <Button 
-            variant="outline" 
-            className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3"
-          >
-            LOAD MORE
-          </Button>
-        </div>
+            {/* Load More */}
+            <div className="text-center">
+              <Button 
+                variant="outline" 
+                className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3"
+              >
+                LOAD MORE
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
