@@ -6,32 +6,32 @@ const categories = [
   {
     id: 'necklaces',
     name: 'NECKLACES',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop'
   },
   {
     id: 'pendants',
     name: 'PENDANTS',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop'
   },
   {
     id: 'bracelets',
     name: 'BRACELETS',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop'
   },
   {
     id: 'rings',
     name: 'RINGS',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop'
   },
   {
     id: 'earrings',
     name: 'EARRINGS',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop'
   },
   {
     id: 'anklets',
     name: 'ANKLETS',
-    image: '/api/placeholder/400/400'
+    image: 'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=400&h=400&fit=crop'
   }
 ];
 

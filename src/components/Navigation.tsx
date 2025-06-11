@@ -5,6 +5,9 @@ import { ShoppingCart, Search, User } from 'lucide-react';
 
 const Navigation = () => {
   const [cartCount] = useState(0);
+  
+  // Mock admin check - in real app, this would come from Supabase auth
+  const isAdmin = true; // This should be replaced with actual admin verification
 
   return (
     <>
@@ -16,6 +19,11 @@ const Navigation = () => {
         </div>
         <div className="flex items-center space-x-4">
           <span>AED</span>
+          {isAdmin && (
+            <Link to="/admin" className="text-gray-800 font-medium">
+              ADMIN PANEL
+            </Link>
+          )}
         </div>
       </div>
 

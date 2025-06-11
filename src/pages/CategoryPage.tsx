@@ -10,48 +10,48 @@ const CategoryPage = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState('all');
 
-  // Mock products data
+  // Mock products data with real jewelry images
   const products = [
     {
       id: '1',
       name: 'Diamond Tennis Necklace',
       price: 12500,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
       category: 'Necklaces'
     },
     {
       id: '2',
       name: 'Pearl Statement Necklace',
       price: 3200,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=400&h=400&fit=crop',
       category: 'Necklaces'
     },
     {
       id: '3',
       name: 'Gold Chain Necklace',
       price: 1800,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
       category: 'Necklaces'
     },
     {
       id: '4',
       name: 'Emerald Pendant Necklace',
       price: 8900,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=400&h=400&fit=crop',
       category: 'Necklaces'
     },
     {
       id: '5',
       name: 'Silver Layered Necklace',
       price: 950,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&h=400&fit=crop',
       category: 'Necklaces'
     },
     {
       id: '6',
       name: 'Rose Gold Choker',
       price: 2100,
-      image: '/api/placeholder/400/400',
+      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
       category: 'Necklaces'
     }
   ];

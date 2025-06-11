@@ -10,7 +10,7 @@ const ProductPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Mock product data - in real app, this would come from API
+  // Mock product data with real jewelry images
   const product = {
     id: id,
     name: 'Diamond Tennis Necklace',
@@ -18,10 +18,10 @@ const ProductPage = () => {
     category: 'Necklaces',
     description: 'Elegant diamond tennis necklace crafted in 18k white gold. Features brilliant cut diamonds totaling 5 carats, each meticulously selected for exceptional clarity and fire.',
     images: [
-      '/api/placeholder/600/600',
-      '/api/placeholder/600/600',
-      '/api/placeholder/600/600',
-      '/api/placeholder/600/600'
+      'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=600&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=600&h=600&fit=crop'
     ],
     specifications: [
       { label: 'Material', value: '18k White Gold' },

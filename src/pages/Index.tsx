@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navigation from '../components/Navigation';
 import CategoryGrid from '../components/CategoryGrid';
@@ -12,7 +11,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative h-screen bg-gray-100 overflow-hidden">
         <img 
-          src="/api/placeholder/1920/1080"
+          src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1920&h=1080&fit=crop"
           alt="Noora Shawqi Jewelry Collection"
           className="w-full h-full object-cover"
         />
@@ -50,7 +49,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
             <div className="relative h-96 bg-gray-100 overflow-hidden">
               <img 
-                src="/api/placeholder/600/400"
+                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=400&fit=crop"
                 alt="Love in Tokyo Collection"
                 className="w-full h-full object-cover"
               />
