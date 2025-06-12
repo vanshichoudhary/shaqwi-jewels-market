@@ -1,13 +1,19 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Search, User } from 'lucide-react';
+import { ShoppingCart, Search, User, LogOut, LogIn } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import LoginPopup from './LoginPopup';
 
 const Navigation = () => {
   const [cartCount] = useState(0);
-  
-  // Mock admin check - in real app, this would come from Supabase auth
-  const isAdmin = true; // This should be replaced with actual admin verification
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const { user, signOut, isAdmin } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <>
@@ -19,10 +25,34 @@ const Navigation = () => {
         </div>
         <div className="flex items-center space-x-4">
           <span>AED</span>
-          {isAdmin && (
+          {user && isAdmin() && (
             <Link to="/admin" className="text-gray-800 font-medium">
               ADMIN PANEL
             </Link>
+          )}
+          {user ? (
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-800">{user.email}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLoginPopup(true)}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <LogIn className="w-4 h-4 mr-1" />
+              Login
+            </Button>
           )}
         </div>
       </div>
@@ -89,6 +119,11 @@ const Navigation = () => {
           </div>
         </div>
       </nav>
+
+      <LoginPopup 
+        isOpen={showLoginPopup} 
+        onClose={() => setShowLoginPopup(false)} 
+      />
     </>
   );
 };

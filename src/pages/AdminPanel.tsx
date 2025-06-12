@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Edit, Trash2, Package, Users, ShoppingCart, BarChart3 } from 'lucide-react';
 import { productService, Product } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const AdminPanel = () => {
+  const { user, isAdmin, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,6 +25,23 @@ const AdminPanel = () => {
     image_url: '',
     in_stock: true
   });
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect if not logged in or not admin
+  if (!user || !isAdmin()) {
+    return <Navigate to="/" replace />;
+  }
 
   // Load products from Supabase
   useEffect(() => {
@@ -127,7 +146,7 @@ const AdminPanel = () => {
               <h1 className="text-xl font-semibold text-gray-900">Admin Panel</h1>
             </div>
             <div className="text-sm text-gray-600">
-              Welcome, Admin
+              Welcome, {user.email}
             </div>
           </div>
         </div>
