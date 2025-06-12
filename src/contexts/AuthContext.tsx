@@ -131,6 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = () => {
+    // Allow specific admin email access
+    if (user?.email === 'vanshichoudhary40@gmail.com') {
+      return true;
+    }
     return profile?.role === 'admin';
   };
 
