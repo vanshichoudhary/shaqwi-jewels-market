@@ -24,13 +24,17 @@ const Index = () => {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
-          <iframe
-            src="https://screenapp.io/app/#/shared/1f2pELL-WI"
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
             className="w-full h-full object-cover"
-            style={{ border: 'none' }}
-            allow="autoplay; fullscreen"
-            title="Background Video"
-          />
+            style={{ objectFit: 'cover' }}
+          >
+            <source src="https://ik.imagekit.io/cn0lbrbin/0613.mp4?updatedAt=1749784621964" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
         
         {/* Overlay for better text readability */}
