@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import CategoryGrid from '@/components/CategoryGrid';
+import GemstonesSection from '@/components/GemstonesSection';
 import LoginPopup from '@/components/LoginPopup';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,20 +20,38 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-7xl font-light tracking-wider text-gray-900 mb-6">
+      {/* Hero Section with Background Video */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <iframe
+            src="https://screenapp.io/app/#/shared/1f2pELL-WI"
+            className="w-full h-full object-cover"
+            style={{ border: 'none' }}
+            allow="autoplay; fullscreen"
+            title="Background Video"
+          />
+        </div>
+        
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        
+        {/* Content */}
+        <div className="relative z-10 text-center text-white">
+          <h1 className="text-5xl md:text-7xl font-light tracking-wider mb-6">
             NOORA SHAWQI
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 tracking-wide">
+          <p className="text-lg md:text-xl mb-8 tracking-wide">
             Exquisite Jewelry Collections
           </p>
-          <button className="bg-gray-900 text-white px-8 py-3 text-sm tracking-widest hover:bg-gray-800 transition-colors">
+          <button className="bg-white text-gray-900 px-8 py-3 text-sm tracking-widest hover:bg-gray-100 transition-colors">
             EXPLORE COLLECTION
           </button>
         </div>
       </section>
+
+      {/* Gemstones Sections */}
+      <GemstonesSection />
 
       {/* Categories Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">

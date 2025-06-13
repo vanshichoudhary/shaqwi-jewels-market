@@ -15,6 +15,13 @@ const Navigation = () => {
     await signOut();
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* Top bar */}
@@ -63,15 +70,24 @@ const Navigation = () => {
           <div className="flex justify-between items-center h-16">
             {/* Left navigation */}
             <div className="flex items-center space-x-8">
-              <Link to="/jewellery" className="text-gray-700 hover:text-gray-900 font-medium tracking-wide">
-                JEWELLERY
-              </Link>
-              <Link to="/campaigns" className="text-gray-700 hover:text-gray-900 font-medium tracking-wide">
-                CAMPAIGNS
-              </Link>
-              <Link to="/press" className="text-gray-700 hover:text-gray-900 font-medium tracking-wide">
-                PRESS
-              </Link>
+              <button 
+                onClick={() => scrollToSection('precious-gemstone')}
+                className="text-gray-700 hover:text-gray-900 font-medium tracking-wide cursor-pointer"
+              >
+                PRECIOUS GEMSTONE
+              </button>
+              <button 
+                onClick={() => scrollToSection('gemstones')}
+                className="text-gray-700 hover:text-gray-900 font-medium tracking-wide cursor-pointer"
+              >
+                GEMSTONES
+              </button>
+              <button 
+                onClick={() => scrollToSection('birth-stones')}
+                className="text-gray-700 hover:text-gray-900 font-medium tracking-wide cursor-pointer"
+              >
+                BIRTH STONES
+              </button>
             </div>
 
             {/* Center logo */}
